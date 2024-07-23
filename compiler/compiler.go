@@ -289,7 +289,8 @@ func (c *Compiler) callOp() {
 	switch c.token.Type {
 	case token.INT:
 		addr, _ := strconv.ParseInt(c.token.Literal, 0, 64)
-		// todo: what is the meaning of this?
+		// len1 (remainder) and len2 (quotient) make up a 16-bit number
+		// which gets read and reconstructed (remainder + quotient*256) by the interpreter
 		len1 := addr % 256
 		len2 := addr / 256
 

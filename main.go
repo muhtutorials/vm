@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"vm/compiler"
 	"vm/lexer"
 )
@@ -11,5 +10,4 @@ func main() {
 	c := compiler.New(l)
 	// c.Dump()
 	c.Compile()
-	fmt.Println(c.Output())
 }
