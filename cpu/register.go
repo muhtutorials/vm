@@ -43,8 +43,8 @@ func NewRegister() *Register {
 func (r *Register) SetInt(v int) {
 	if v <= 0 {
 		r.obj = &IntObject{Value: 0}
-	} else if v >= 0xffff {
-		r.obj = &IntObject{Value: 0xffff}
+	} else if v >= maxMemSize {
+		r.obj = &IntObject{Value: maxMemSize}
 	} else {
 		r.obj = &IntObject{Value: v}
 	}

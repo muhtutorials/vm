@@ -217,7 +217,8 @@ func (c *Compiler) mathOp(op int) {
 	}
 
 	// token = "#0"
-	dst := c.getRegister(c.token.Literal)
+	// result
+	res := c.getRegister(c.token.Literal)
 
 	if !c.checkNextToken(token.COMMA) {
 		return
@@ -229,7 +230,7 @@ func (c *Compiler) mathOp(op int) {
 	}
 
 	// token = "#1"
-	reg1 := c.getRegister(c.token.Literal)
+	a := c.getRegister(c.token.Literal)
 
 	if !c.checkNextToken(token.COMMA) {
 		return
@@ -241,12 +242,12 @@ func (c *Compiler) mathOp(op int) {
 	}
 
 	// token = "#2"
-	reg2 := c.getRegister(c.token.Literal)
+	b := c.getRegister(c.token.Literal)
 
 	c.bytecode = append(c.bytecode, byte(op))
-	c.bytecode = append(c.bytecode, dst)
-	c.bytecode = append(c.bytecode, reg1)
-	c.bytecode = append(c.bytecode, reg2)
+	c.bytecode = append(c.bytecode, res)
+	c.bytecode = append(c.bytecode, a)
+	c.bytecode = append(c.bytecode, b)
 }
 
 // incOp increments the contents of the given register
