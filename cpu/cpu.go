@@ -2,10 +2,13 @@ package cpu
 
 import (
 	"bufio"
+	"bytes"
 	"context"
 	"fmt"
 	"math/rand"
 	"os"
+	"os/exec"
+	"strconv"
 	"time"
 	"vm/opcode"
 )
@@ -646,6 +649,207 @@ func (c *CPU) Run() error {
 				return err
 			}
 
+			toExec := splitCommand(str)
+			cmd := exec.Command(toExec[0], toExec[1:]...)
+
+			var (
+				out *bytes.Buffer
+				er  *bytes.Buffer
+			)
+			cmd.Stdout = out
+			cmd.Stderr = er
+
+			if err = cmd.Run(); err != nil {
+				return fmt.Errorf("error invoking system(%s): %s", str, err)
+			}
+
+			// stdout
+			fmt.Printf("%s", out.String())
+
+			// stderr, if non-empty
+			if len(er.String()) > 0 {
+				fmt.Printf("%s", er.String())
+			}
+
+		case opcode.STR_TO_INT:
+			// register
+			c.ip++
+			reg := int(c.mem[c.ip])
+			if reg >= len(c.regs) {
+				return fmt.Errorf("register [%d] is out of range", reg)
+			}
+
+			s, err := c.regs[reg].GetStr()
+			if err != nil {
+				return err
+			}
+
+			i, err := strconv.Atoi(s)
+			if err != nil {
+				return fmt.Errorf("failed to convert string (%s) to int: %s", s, err)
+			}
+
+			c.regs[reg].SetInt(i)
+
+			// next instruction
+			c.ip++
+
+		case opcode.CMP_INT:
+			// register
+			c.ip++
+			reg := int(c.mem[c.ip])
+			if reg >= len(c.regs) {
+				return fmt.Errorf("register [%d] is out of range", reg)
+			}
+
+			c.ip++
+			val := c.readInt()
+
+			if c.regs[reg].Type() == "int" {
+				regVal, err := c.regs[reg].GetInt()
+				if err != nil {
+					return err
+				}
+				if val == regVal {
+					c.flags.z = true
+				}
+			} else {
+				c.flags.z = false
+			}
+
+		case opcode.CMP_STR:
+			// register
+			c.ip++
+			reg := int(c.mem[c.ip])
+			if reg >= len(c.regs) {
+				return fmt.Errorf("register [%d] is out of range", reg)
+			}
+
+			c.ip++
+			val, err := c.readStr()
+			if err != nil {
+				return err
+			}
+
+			if c.regs[reg].Type() == "str" {
+				regVal, err := c.regs[reg].GetStr()
+				if err != nil {
+					return err
+				}
+				if val == regVal {
+					c.flags.z = true
+				}
+			} else {
+				c.flags.z = false
+			}
+
+		case opcode.CMP_REG:
+			c.ip++
+			reg1 := int(c.mem[c.ip])
+			if reg1 >= len(c.regs) {
+				return fmt.Errorf("register [%d] is out of range", reg1)
+			}
+
+			c.ip++
+			reg2 := int(c.mem[c.ip])
+			if reg2 >= len(c.regs) {
+				return fmt.Errorf("register [%d] is out of range", reg2)
+			}
+
+			c.flags.z = false
+
+			switch c.regs[reg1].Type() {
+			case "int":
+				a, err := c.regs[reg1].GetInt()
+				if err != nil {
+					return err
+				}
+				b, err := c.regs[reg2].GetInt()
+				if err != nil {
+					return err
+				}
+				if a == b {
+					c.flags.z = true
+				}
+			case "str":
+				a, err := c.regs[reg1].GetStr()
+				if err != nil {
+					return err
+				}
+				b, err := c.regs[reg2].GetStr()
+				if err != nil {
+					return err
+				}
+				if a == b {
+					c.flags.z = true
+				}
+			}
+
+		case opcode.IS_INT:
+			// register
+			c.ip++
+			reg := int(c.mem[c.ip])
+			if reg >= len(c.regs) {
+				return fmt.Errorf("register [%d] is out of range", reg)
+			}
+
+			c.ip++
+
+			if c.regs[reg].Type() == "int" {
+				c.flags.z = true
+			} else {
+				c.flags.z = false
+			}
+
+		case opcode.IS_STR:
+			// register
+			c.ip++
+			reg := int(c.mem[c.ip])
+			if reg >= len(c.regs) {
+				return fmt.Errorf("register [%d] is out of range", reg)
+			}
+
+			c.ip++
+
+			if c.regs[reg].Type() == "str" {
+				c.flags.z = true
+			} else {
+				c.flags.z = false
+			}
+
+		case opcode.NOP:
+			c.ip++
+
+		case opcode.REG_STORE:
+			// register
+			c.ip++
+			dst := int(c.mem[c.ip])
+			if dst >= len(c.regs) {
+				return fmt.Errorf("register [%d] is out of range", dst)
+			}
+
+			// register
+			c.ip++
+			src := int(c.mem[c.ip])
+			if src >= len(c.regs) {
+				return fmt.Errorf("register [%d] is out of range", src)
+			}
+
+			if c.regs[src].Type() == "int" {
+				val, err := c.regs[src].GetInt()
+				if err != nil {
+					return err
+				}
+				c.regs[dst].SetInt(val)
+			} else if c.regs[src].Type() == "str" {
+				val, err := c.regs[src].GetStr()
+				if err != nil {
+					return err
+				}
+				c.regs[dst].SetStr(val)
+			} else {
+				return fmt.Errorf("invalid register type")
+			}
 		}
 	}
 
