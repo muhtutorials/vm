@@ -13,7 +13,7 @@ import (
 	"vm/opcode"
 )
 
-// maxMemSize maximum available RAM
+// maxMemSize maximum available memory (RAM)
 const maxMemSize = 0xffff
 
 type Flags struct {
@@ -21,7 +21,7 @@ type Flags struct {
 	z bool
 }
 
-// CPU is our virtual machine state
+// CPU is the virtual machine's state
 type CPU struct {
 	// registers
 	regs [15]*Register
@@ -42,7 +42,7 @@ type CPU struct {
 	// STDIN is an input reader used for the input trap
 	STDIN *bufio.Reader
 
-	// STDOUT is the writer used for outputting
+	// STDOUT is the writer used for output
 	STDOUT *bufio.Writer
 }
 
@@ -74,7 +74,7 @@ func (c *CPU) Reset() {
 	c.stack = NewStack()
 }
 
-// ReadFile reads the program from the named file into RAM.
+// ReadFile reads the program (bytecode) from the named file into RAM.
 // NOTE: The CPU state is reset prior to the load.
 func (c *CPU) ReadFile(path string) error {
 	data, err := os.ReadFile(path)
@@ -92,7 +92,7 @@ func (c *CPU) ReadFile(path string) error {
 	return nil
 }
 
-// LoadBytes populates the given program into RAM.
+// LoadBytes loads the given program into RAM.
 // NOTE: The CPU state is reset prior to the load.
 func (c *CPU) LoadBytes(data []byte) {
 	c.Reset()
@@ -139,7 +139,6 @@ func (c *CPU) readStr() (string, error) {
 	for i := 0; i < strLen; i++ {
 		tmpIP := ip + i
 		// wrap around
-		// todo: Why don't we break here?
 		if tmpIP == maxMemSize {
 			tmpIP = 0
 		}
@@ -214,8 +213,7 @@ func (c *CPU) Run() error {
 				}
 			}
 
-			err = c.STDOUT.Flush()
-			if err != nil {
+			if err = c.STDOUT.Flush(); err != nil {
 				return err
 			}
 
@@ -283,13 +281,13 @@ func (c *CPU) Run() error {
 			c.ip++
 			a := c.mem[c.ip]
 			if int(a) >= len(c.regs) {
-				return fmt.Errorf("register [%d] is out of range", res)
+				return fmt.Errorf("register [%d] is out of range", a)
 			}
 
 			c.ip++
 			b := c.mem[c.ip]
 			if int(b) >= len(c.regs) {
-				return fmt.Errorf("register [%d] is out of range", res)
+				return fmt.Errorf("register [%d] is out of range", b)
 			}
 
 			c.ip++
@@ -315,13 +313,13 @@ func (c *CPU) Run() error {
 			c.ip++
 			a := c.mem[c.ip]
 			if int(a) >= len(c.regs) {
-				return fmt.Errorf("register [%d] is out of range", res)
+				return fmt.Errorf("register [%d] is out of range", a)
 			}
 
 			c.ip++
 			b := c.mem[c.ip]
 			if int(b) >= len(c.regs) {
-				return fmt.Errorf("register [%d] is out of range", res)
+				return fmt.Errorf("register [%d] is out of range", b)
 			}
 
 			c.ip++
@@ -336,6 +334,7 @@ func (c *CPU) Run() error {
 			}
 			c.regs[res].SetInt(aVal - bVal)
 
+			// todo: Why do we set zero flag here?
 			// set the zero flag if the result was zero or less
 			resVal, err := c.regs[res].GetInt()
 			if err != nil {
@@ -356,13 +355,13 @@ func (c *CPU) Run() error {
 			c.ip++
 			a := c.mem[c.ip]
 			if int(a) >= len(c.regs) {
-				return fmt.Errorf("register [%d] is out of range", res)
+				return fmt.Errorf("register [%d] is out of range", a)
 			}
 
 			c.ip++
 			b := c.mem[c.ip]
 			if int(b) >= len(c.regs) {
-				return fmt.Errorf("register [%d] is out of range", res)
+				return fmt.Errorf("register [%d] is out of range", b)
 			}
 
 			c.ip++
@@ -388,13 +387,13 @@ func (c *CPU) Run() error {
 			c.ip++
 			a := c.mem[c.ip]
 			if int(a) >= len(c.regs) {
-				return fmt.Errorf("register [%d] is out of range", res)
+				return fmt.Errorf("register [%d] is out of range", a)
 			}
 
 			c.ip++
 			b := c.mem[c.ip]
 			if int(b) >= len(c.regs) {
-				return fmt.Errorf("register [%d] is out of range", res)
+				return fmt.Errorf("register [%d] is out of range", b)
 			}
 
 			c.ip++
@@ -427,7 +426,7 @@ func (c *CPU) Run() error {
 				return err
 			}
 
-			// if the value is the max it will wrap around
+			// if the value equals maximum memory size it will wrap around
 			if i == maxMemSize {
 				i = 0
 			} else {
@@ -453,7 +452,7 @@ func (c *CPU) Run() error {
 				return err
 			}
 
-			// if the value is the max it will wrap around
+			// if the value equals zero it will wrap around
 			if i == 0 {
 				i = maxMemSize
 			} else {
@@ -477,13 +476,13 @@ func (c *CPU) Run() error {
 			c.ip++
 			a := c.mem[c.ip]
 			if int(a) >= len(c.regs) {
-				return fmt.Errorf("register [%d] is out of range", res)
+				return fmt.Errorf("register [%d] is out of range", a)
 			}
 
 			c.ip++
 			b := c.mem[c.ip]
 			if int(b) >= len(c.regs) {
-				return fmt.Errorf("register [%d] is out of range", res)
+				return fmt.Errorf("register [%d] is out of range", b)
 			}
 
 			c.ip++
@@ -509,13 +508,13 @@ func (c *CPU) Run() error {
 			c.ip++
 			a := c.mem[c.ip]
 			if int(a) >= len(c.regs) {
-				return fmt.Errorf("register [%d] is out of range", res)
+				return fmt.Errorf("register [%d] is out of range", a)
 			}
 
 			c.ip++
 			b := c.mem[c.ip]
 			if int(b) >= len(c.regs) {
-				return fmt.Errorf("register [%d] is out of range", res)
+				return fmt.Errorf("register [%d] is out of range", b)
 			}
 
 			c.ip++
@@ -541,13 +540,13 @@ func (c *CPU) Run() error {
 			c.ip++
 			a := c.mem[c.ip]
 			if int(a) >= len(c.regs) {
-				return fmt.Errorf("register [%d] is out of range", res)
+				return fmt.Errorf("register [%d] is out of range", a)
 			}
 
 			c.ip++
 			b := c.mem[c.ip]
 			if int(b) >= len(c.regs) {
-				return fmt.Errorf("register [%d] is out of range", res)
+				return fmt.Errorf("register [%d] is out of range", b)
 			}
 
 			c.ip++
@@ -596,8 +595,7 @@ func (c *CPU) Run() error {
 				return err
 			}
 
-			err = c.STDOUT.Flush()
-			if err != nil {
+			if err = c.STDOUT.Flush(); err != nil {
 				return err
 			}
 
@@ -615,13 +613,13 @@ func (c *CPU) Run() error {
 			c.ip++
 			a := c.mem[c.ip]
 			if int(a) >= len(c.regs) {
-				return fmt.Errorf("register [%d] is out of range", res)
+				return fmt.Errorf("register [%d] is out of range", a)
 			}
 
 			c.ip++
 			b := c.mem[c.ip]
 			if int(b) >= len(c.regs) {
-				return fmt.Errorf("register [%d] is out of range", res)
+				return fmt.Errorf("register [%d] is out of range", b)
 			}
 
 			c.ip++
@@ -660,15 +658,15 @@ func (c *CPU) Run() error {
 			cmd.Stderr = er
 
 			if err = cmd.Run(); err != nil {
-				return fmt.Errorf("error invoking system(%s): %s", str, err)
+				return fmt.Errorf("error invoking system (%s): %s", str, err)
 			}
 
 			// stdout
-			fmt.Printf("%s", out.String())
+			fmt.Printf("%s\n", out.String())
 
 			// stderr, if non-empty
 			if len(er.String()) > 0 {
-				fmt.Printf("%s", er.String())
+				fmt.Printf("%s\n", er.String())
 			}
 
 		case opcode.STR_TO_INT:
@@ -710,7 +708,7 @@ func (c *CPU) Run() error {
 				if err != nil {
 					return err
 				}
-				if val == regVal {
+				if regVal == val {
 					c.flags.z = true
 				}
 			} else {
@@ -736,7 +734,7 @@ func (c *CPU) Run() error {
 				if err != nil {
 					return err
 				}
-				if val == regVal {
+				if regVal == val {
 					c.flags.z = true
 				}
 			} else {
@@ -1023,7 +1021,19 @@ func (c *CPU) Run() error {
 			}
 
 			fn := TRAPS[num]
+			if fn != nil {
+				if err := fn(c, num); err != nil {
+					return err
+				}
+			}
 
+		default:
+			return fmt.Errorf("unknown opcode %02x at IP %04x", op.Value(), c.ip)
+		}
+
+		// ensure that instruction pointer wraps around
+		if c.ip > maxMemSize {
+			c.ip = 0
 		}
 	}
 

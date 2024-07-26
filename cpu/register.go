@@ -2,12 +2,12 @@ package cpu
 
 import "fmt"
 
-// Object is the interface for something we store in a register
+// Object is the interface for a value stored in a register
 type Object interface {
 	Type() string
 }
 
-// IntObject is an object holding an integer
+// IntObject is an object containing an integer
 type IntObject struct {
 	Value int
 }
@@ -16,7 +16,7 @@ func (IntObject) Type() string {
 	return "int"
 }
 
-// StrObject is an object holding an integer
+// StrObject is an object containing a string
 type StrObject struct {
 	Value string
 }
@@ -25,8 +25,8 @@ func (StrObject) Type() string {
 	return "str"
 }
 
-// Register holds the contents of a single register as an object.
-// This means it can hold either an IntObject or a StrObject.
+// Register contains the value of a single register as an object.
+// This means it can contain either an IntObject or a StrObject.
 type Register struct {
 	obj Object
 }
@@ -57,7 +57,7 @@ func (r *Register) GetInt() (int, error) {
 	if ok {
 		return v.Value, nil
 	}
-	return 0, fmt.Errorf("attempting to call GetInt on a register holding a non-integer value: %v", r.obj)
+	return 0, fmt.Errorf("attempting to call GetInt on a register containing a non-integer value: %v", r.obj)
 }
 
 // SetStr stores the given string in the register
@@ -72,10 +72,10 @@ func (r *Register) GetStr() (string, error) {
 	if ok {
 		return v.Value, nil
 	}
-	return "", fmt.Errorf("attempting to call GetStr on a register holding a non-string value: %v", r.obj)
+	return "", fmt.Errorf("attempting to call GetStr on a register containing a non-string value: %v", r.obj)
 }
 
-// Type returns the type of register's contents (integer or string)
+// Type returns the type of the register's value (integer or string)
 func (r *Register) Type() string {
 	return r.obj.Type()
 }

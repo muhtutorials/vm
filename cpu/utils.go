@@ -20,7 +20,7 @@ func debugPrintf(format string, args ...any) {
 //
 //	/bin/sh -c "ls /etc"
 //
-// Would give output of the form:
+// Would give output in the form:
 //
 //	/bin/sh
 //	-c
