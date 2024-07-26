@@ -350,7 +350,7 @@ func (c *Compiler) pushOp() {
 		return
 	}
 
-	// save the register we're storing to
+	// register containing value pushed to the stack
 	reg := c.getRegister(c.token.Literal)
 
 	c.bytecode = append(c.bytecode, byte(opcode.PUSH))
@@ -363,7 +363,7 @@ func (c *Compiler) popOp() {
 		return
 	}
 
-	// save the register we're storing to
+	// popped value from the stack is stored to this register
 	reg := c.getRegister(c.token.Literal)
 
 	c.bytecode = append(c.bytecode, byte(opcode.POP))
@@ -587,7 +587,8 @@ func (c *Compiler) peekOp() {
 		return
 	}
 	// token = "#0"
-	reg := c.getRegister(c.token.Literal)
+	// reg1 is the register to which a value from memory is stored to
+	reg1 := c.getRegister(c.token.Literal)
 
 	if !c.checkNextToken(token.COMMA) {
 		return
@@ -598,14 +599,15 @@ func (c *Compiler) peekOp() {
 		return
 	}
 	// token = "#1"
-	addr := c.getRegister(c.token.Literal)
+	// reg2 contains memory address (bytecode index) to value which is stored to reg1
+	reg2 := c.getRegister(c.token.Literal)
 
 	c.bytecode = append(c.bytecode, byte(opcode.PEEK))
-	c.bytecode = append(c.bytecode, reg)
-	c.bytecode = append(c.bytecode, addr)
+	c.bytecode = append(c.bytecode, reg1)
+	c.bytecode = append(c.bytecode, reg2)
 }
 
-// pokeOp writes to memory
+// pokeOp writes to memory (RAM)
 // e.g. poke #1, #2
 func (c *Compiler) pokeOp() {
 	// token = POKE
@@ -613,7 +615,8 @@ func (c *Compiler) pokeOp() {
 		return
 	}
 	// token = "#1"
-	reg := c.getRegister(c.token.Literal)
+	// reg1 contains value which will be stored to memory (RAM)
+	reg1 := c.getRegister(c.token.Literal)
 
 	if !c.checkNextToken(token.COMMA) {
 		return
@@ -624,11 +627,12 @@ func (c *Compiler) pokeOp() {
 		return
 	}
 	// token = "#2"
-	addr := c.getRegister(c.token.Literal)
+	// reg2 contains memory address (bytecode index) where value from reg1 will be stored
+	reg2 := c.getRegister(c.token.Literal)
 
 	c.bytecode = append(c.bytecode, byte(opcode.POKE))
-	c.bytecode = append(c.bytecode, reg)
-	c.bytecode = append(c.bytecode, addr)
+	c.bytecode = append(c.bytecode, reg1)
+	c.bytecode = append(c.bytecode, reg2)
 }
 
 // concatOp concatenates two strings
@@ -710,24 +714,27 @@ func (c *Compiler) exitOp() {
 // e.g. memCpy #1, #2, #3
 func (c *Compiler) memCpyOp() {
 	c.nextToken()
-	reg1 := c.getRegister(c.token.Literal)
+	// destination
+	dst := c.getRegister(c.token.Literal)
 	if !c.checkNextToken(token.COMMA) {
 		return
 	}
 
 	c.nextToken()
-	reg2 := c.getRegister(c.token.Literal)
+	// source
+	src := c.getRegister(c.token.Literal)
 	if !c.checkNextToken(token.COMMA) {
 		return
 	}
 
 	c.nextToken()
-	reg3 := c.getRegister(c.token.Literal)
+	// bytecode length to copy
+	length := c.getRegister(c.token.Literal)
 
 	c.bytecode = append(c.bytecode, byte(opcode.MEM_CPY))
-	c.bytecode = append(c.bytecode, reg1)
-	c.bytecode = append(c.bytecode, reg2)
-	c.bytecode = append(c.bytecode, reg3)
+	c.bytecode = append(c.bytecode, dst)
+	c.bytecode = append(c.bytecode, src)
+	c.bytecode = append(c.bytecode, length)
 }
 
 // nopOp does nothing

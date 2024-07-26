@@ -821,14 +821,12 @@ func (c *CPU) Run() error {
 			c.ip++
 
 		case opcode.REG_STORE:
-			// register
 			c.ip++
 			dst := int(c.mem[c.ip])
 			if dst >= len(c.regs) {
 				return fmt.Errorf("register [%d] is out of range", dst)
 			}
 
-			// register
 			c.ip++
 			src := int(c.mem[c.ip])
 			if src >= len(c.regs) {
@@ -850,6 +848,182 @@ func (c *CPU) Run() error {
 			} else {
 				return fmt.Errorf("invalid register type")
 			}
+
+		case opcode.PEEK:
+			c.ip++
+			reg1 := int(c.mem[c.ip])
+			if reg1 >= len(c.regs) {
+				return fmt.Errorf("register [%d] is out of range", reg1)
+			}
+
+			c.ip++
+			reg2 := int(c.mem[c.ip])
+			if reg2 >= len(c.regs) {
+				return fmt.Errorf("register [%d] is out of range", reg2)
+			}
+
+			// get the address from the reg2 register
+			addr, err := c.regs[reg2].GetInt()
+			if err != nil {
+				return err
+			}
+			if addr >= maxMemSize {
+				return fmt.Errorf("address [%d] is out of range", addr)
+			}
+
+			// store the contents of the given address
+			c.regs[reg1].SetInt(int(c.mem[addr]))
+			c.ip++
+
+		case opcode.POKE:
+			c.ip++
+			reg1 := int(c.mem[c.ip])
+			if reg1 >= len(c.regs) {
+				return fmt.Errorf("register [%d] is out of range", reg1)
+			}
+
+			c.ip++
+			reg2 := int(c.mem[c.ip])
+			if reg2 >= len(c.regs) {
+				return fmt.Errorf("register [%d] is out of range", reg2)
+			}
+
+			// reg1 contains value which will be stored to memory (RAM)
+			val, err := c.regs[reg1].GetInt()
+			if err != nil {
+				return err
+			}
+			if val >= maxMemSize {
+				return fmt.Errorf("value [%d] is out of range", val)
+			}
+
+			// reg2 contains memory address (bytecode index) where value from reg1 will be stored
+			addr, err := c.regs[reg2].GetInt()
+			if err != nil {
+				return err
+			}
+			if addr >= maxMemSize {
+				return fmt.Errorf("address [%d] is out of range", addr)
+			}
+
+			c.mem[addr] = byte(val)
+
+		case opcode.MEM_CPY:
+			c.ip++
+			dst := int(c.mem[c.ip])
+			if dst >= len(c.regs) {
+				return fmt.Errorf("register [%d] is out of range", dst)
+			}
+
+			c.ip++
+			src := int(c.mem[c.ip])
+			if src >= len(c.regs) {
+				return fmt.Errorf("register [%d] is out of range", src)
+			}
+
+			c.ip++
+			lng := int(c.mem[c.ip])
+			if lng >= len(c.regs) {
+				return fmt.Errorf("register [%d] is out of range", lng)
+			}
+
+			dstAddr, err := c.regs[dst].GetInt()
+			if err != nil {
+				return err
+			}
+
+			srcAddr, err := c.regs[src].GetInt()
+			if err != nil {
+				return err
+			}
+
+			length, err := c.regs[lng].GetInt()
+			if err != nil {
+				return err
+			}
+
+			i := 0
+			for i < length {
+				if dstAddr >= maxMemSize {
+					dstAddr = 0
+				}
+				if srcAddr >= maxMemSize {
+					srcAddr = 0
+				}
+				c.mem[dstAddr] = c.mem[srcAddr]
+				dstAddr++
+				srcAddr++
+				i++
+			}
+
+		case opcode.PUSH:
+			// register
+			c.ip++
+			reg := int(c.mem[c.ip])
+			if reg >= len(c.regs) {
+				return fmt.Errorf("register [%d] is out of range", reg)
+			}
+
+			c.ip++
+
+			val, err := c.regs[reg].GetInt()
+			if err != nil {
+				return err
+			}
+
+			c.stack.Push(val)
+
+		case opcode.POP:
+			// register
+			c.ip++
+			reg := int(c.mem[c.ip])
+			if reg >= len(c.regs) {
+				return fmt.Errorf("register [%d] is out of range", reg)
+			}
+
+			c.ip++
+
+			// ensure that the stack isn't empty
+			if c.stack.Empty() {
+				return fmt.Errorf("stackunderflow")
+			}
+
+			// store the value from the stack in the register
+			val, _ := c.stack.Pop()
+			c.regs[reg].SetInt(val)
+
+		case opcode.CALL:
+			c.ip++
+
+			addr := c.readInt()
+
+			// push current IP to the stack
+			c.stack.Push(c.ip)
+
+			// jump to the call address
+			c.ip = addr
+		case opcode.RET:
+			// ensure that the stack isn't empty
+			if c.stack.Empty() {
+				return fmt.Errorf("stackunderflow")
+			}
+
+			addr, _ := c.stack.Pop()
+
+			// jump
+			c.ip = addr
+
+		case opcode.TRAP:
+			c.ip++
+
+			num := c.readInt()
+
+			if num < 0 || num >= maxMemSize {
+				return fmt.Errorf("invalid trap number: %d", num)
+			}
+
+			fn := TRAPS[num]
+
 		}
 	}
 
