@@ -21,7 +21,7 @@ func New(input string) *Lexer {
 // readChar reads next character
 func (l *Lexer) readChar() {
 	if l.nextPos >= len(l.characters) {
-		l.char = '0'
+		l.char = rune(0)
 	} else {
 		l.char = l.characters[l.nextPos]
 	}
@@ -52,7 +52,7 @@ func (l *Lexer) NextToken() token.Token {
 	case ':':
 		tok.Type = token.LABEL
 		tok.Literal = l.readLabel()
-	case '0':
+	case rune(0):
 		tok.Type = token.EOF
 		tok.Literal = ""
 	default:
@@ -83,14 +83,14 @@ func (l *Lexer) skipWhitespace() {
 }
 
 func (l *Lexer) skipComment() {
-	for l.char != '\n' && l.char != '0' {
+	for l.char != '\n' && l.char != rune(0) {
 		l.readChar()
 	}
 }
 
 func (l *Lexer) peekChar() rune {
 	if l.nextPos >= len(l.characters) {
-		return '0'
+		return rune(0)
 	}
 	return l.characters[l.nextPos]
 }
@@ -138,7 +138,7 @@ func (l *Lexer) readUntilWhitespace() string {
 	pos := l.pos
 	// 7 8 9 10 11
 	// : f o r  sp
-	for !isWhiteSpace(l.char) && l.char != '0' {
+	for !isWhiteSpace(l.char) && l.char != rune(0) {
 		l.readChar()
 	}
 	return string(l.characters[pos:l.pos])
@@ -177,7 +177,7 @@ func isWhiteSpace(char rune) bool {
 }
 
 func isEmpty(char rune) bool {
-	return char == '0'
+	return char == rune(0)
 }
 
 func isIdentifier(char rune) bool {

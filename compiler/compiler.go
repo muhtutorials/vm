@@ -96,7 +96,7 @@ func (c *Compiler) getRegister(input string) byte {
 		panic(err)
 	}
 
-	if 0 <= i && i <= 15 {
+	if 0 <= i && i < 15 {
 		return byte(i)
 	}
 

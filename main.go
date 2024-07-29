@@ -1,13 +1,23 @@
 package main
 
 import (
-	"vm/compiler"
-	"vm/lexer"
+	"context"
+	"flag"
+	"github.com/google/subcommands"
+	"os"
 )
 
 func main() {
-	l := lexer.New("inc #1")
-	c := compiler.New(l)
-	// c.Dump()
-	c.Compile()
+	subcommands.Register(subcommands.HelpCommand(), "")
+	subcommands.Register(subcommands.FlagsCommand(), "")
+	subcommands.Register(subcommands.CommandsCommand(), "")
+	subcommands.Register(&compileCmd{}, "")
+	subcommands.Register(&dumpCmd{}, "")
+	subcommands.Register(&executeCmd{}, "")
+	subcommands.Register(&runCmd{}, "")
+	subcommands.Register(&versionCmd{}, "")
+
+	flag.Parse()
+	ctx := context.Background()
+	os.Exit(int(subcommands.Execute(ctx)))
 }

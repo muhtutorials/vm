@@ -1,0 +1,23 @@
+#
+# About:
+#
+#  This program adds two numbers.
+#
+# Usage:
+#
+#  go run . run ./examples/add.in
+#
+# Or compile, then execute:
+#
+#  go run . compile ./add.in
+#  go run . execute ./add.raw
+#
+
+    store #1, 5
+    store #2, 3
+    add #0, #1, #2
+    print_int #0
+
+    # add two newlines to the output
+    store #1, "\n\n"
+    print_str #1
