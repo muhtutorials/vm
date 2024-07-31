@@ -1,0 +1,18 @@
+#
+# About:
+#
+#  Print "Hello World!".
+#
+# Usage:
+#
+#  go run . run ./examples/hello.in
+#
+# Or compile, then execute:
+#
+#  go run . compile ./examples/hello.in
+#  go run . execute ./examples/hello.raw
+#
+
+    store #1, "Hello World!"
+    print_str #1
+    exit

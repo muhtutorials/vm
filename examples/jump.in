@@ -1,0 +1,33 @@
+#
+# About:
+#
+#  Test goto/label handling.
+#
+# Usage:
+#
+#  go run . run ./examples/jump.in
+#
+# Or compile, then execute:
+#
+#  go run . compile ./examples/jump.in
+#  go run . execute ./examples/jump.raw
+#
+
+    store #1, "apple\n"
+    print_str #1
+    jmp number
+
+    exit
+
+:orange
+    store #1, "orange\n"
+    print_str #1
+
+    exit
+
+:number
+    store #1, 18
+    print_int #1
+    store #1, "\n"
+    print_str #1
+    jmp orange

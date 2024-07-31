@@ -1,0 +1,40 @@
+#
+# About:
+#
+#  Multiply and divide two numbers.
+#
+# Usage:
+#
+#  go run . run ./examples/mul_div.in
+#
+# Or compile, then execute:
+#
+#  go run . compile ./examples/mul_div.in
+#  go run . execute ./examples/mul_div.raw
+#
+
+    store #1, 2
+    store #2, 6
+    store #5, "multiplying "
+    print_str #5
+    print_int #1
+    store #5, " and "
+    print_str #5
+    print_int #2
+    store #5, "\n"
+    print_str #5
+
+    mul #0, #1, #2
+
+    store #5, "result: "
+    print_str #5
+    print_int #0
+    store #5, "\n"
+    print_str #5
+
+    store #5, "dividing result by three: "
+    print_str #5
+
+    store #3, 3
+    div #0, #0, #3
+    print_int #0

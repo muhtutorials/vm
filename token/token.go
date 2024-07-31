@@ -63,7 +63,6 @@ const (
 	// misc
 	CONCAT  = "CONCAT"
 	DATA    = "DATA"
-	DB      = "DB"
 	EXIT    = "EXIT"
 	MEM_CPY = "MEM_CPY"
 	NOP     = "NOP"
@@ -116,15 +115,14 @@ var keywords = map[string]Type{
 	"poke": POKE,
 
 	// misc
-	"concat": CONCAT,
-	"data":   DATA,
-	"db":     DB,
-	"exit":   EXIT,
-	"memCpy": MEM_CPY,
-	"nop":    NOP,
-	"rand":   RAND,
-	"system": SYSTEM,
-	"trap":   TRAP,
+	"concat":  CONCAT,
+	"data":    DATA,
+	"exit":    EXIT,
+	"mem_cpy": MEM_CPY,
+	"nop":     NOP,
+	"rand":    RAND,
+	"system":  SYSTEM,
+	"trap":    TRAP,
 }
 
 // LookupIdentifier determines whether identifier is a keyword nor not

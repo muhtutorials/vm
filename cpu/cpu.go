@@ -28,7 +28,10 @@ type CPU struct {
 
 	flags Flags
 
-	// RAM (where the program is loaded)
+	// mem is memory (RAM) where the program is loaded.
+	// Loaded program size shouldn't exceed maxMemSize-1,
+	// so the last memory byte will always be a "0" and the program can terminate
+	// since "0" is the EXIT opcode.
 	mem [maxMemSize]byte
 
 	// instruction pointer
@@ -84,7 +87,7 @@ func (c *CPU) ReadFile(path string) error {
 
 	if len(data) >= maxMemSize {
 		return fmt.Errorf(
-			"program is too large for memory: RAM size => %d bytes, program size => %d bytes",
+			"program is too large for memory: RAM size => %d bytes, program size => %d bytes\n",
 			maxMemSize, len(data))
 	}
 
@@ -99,12 +102,15 @@ func (c *CPU) LoadBytes(data []byte) {
 
 	if len(data) >= maxMemSize {
 		fmt.Printf(
-			"program is too large for memory: RAM size => %d bytes, program size => %d bytes",
+			"program is too large for memory: RAM size => %d bytes, program size => %d bytes\n",
 			maxMemSize, len(data))
 	}
 
 	// copy contents of file to our memory
 	copy(c.mem[:], data)
+	//for i := 0; i < len(data); i++ {
+	//	fmt.Printf("%x\n", c.mem[i])
+	//}
 }
 
 // readInt reads a two byte number from the current IP.
@@ -161,6 +167,7 @@ func (c *CPU) Run() error {
 		}
 
 		op := opcode.NewOpcode(c.mem[c.ip])
+		//fmt.Printf("%s: %x\n", op.String(), op.Value())
 
 		debugPrintf("%04x %02x [%s]\n", c.ip, op.Value(), op.String())
 
@@ -334,8 +341,8 @@ func (c *CPU) Run() error {
 			}
 			c.regs[res].SetInt(aVal - bVal)
 
-			// todo: Why do we set zero flag here?
-			// set the zero flag if the result was zero or less
+			// Set the zero flag if the result was zero or less.
+			// Used during iteration (see examples/concat.in).
 			resVal, err := c.regs[res].GetInt()
 			if err != nil {
 				return err
@@ -581,6 +588,7 @@ func (c *CPU) Run() error {
 			// register
 			c.ip++
 			reg := int(c.mem[c.ip])
+
 			if reg >= len(c.regs) {
 				return fmt.Errorf("register [%d] is out of range", reg)
 			}
@@ -703,6 +711,8 @@ func (c *CPU) Run() error {
 			c.ip++
 			val := c.readInt()
 
+			c.flags.z = false
+
 			if c.regs[reg].Type() == "int" {
 				regVal, err := c.regs[reg].GetInt()
 				if err != nil {
@@ -711,8 +721,6 @@ func (c *CPU) Run() error {
 				if regVal == val {
 					c.flags.z = true
 				}
-			} else {
-				c.flags.z = false
 			}
 
 		case opcode.CMP_STR:
@@ -729,6 +737,8 @@ func (c *CPU) Run() error {
 				return err
 			}
 
+			c.flags.z = false
+
 			if c.regs[reg].Type() == "str" {
 				regVal, err := c.regs[reg].GetStr()
 				if err != nil {
@@ -737,8 +747,6 @@ func (c *CPU) Run() error {
 				if regVal == val {
 					c.flags.z = true
 				}
-			} else {
-				c.flags.z = false
 			}
 
 		case opcode.CMP_REG:
@@ -782,6 +790,9 @@ func (c *CPU) Run() error {
 					c.flags.z = true
 				}
 			}
+
+			// next instruction
+			c.ip++
 
 		case opcode.IS_INT:
 			// register
@@ -953,6 +964,9 @@ func (c *CPU) Run() error {
 				srcAddr++
 				i++
 			}
+
+			// next instruction
+			c.ip++
 
 		case opcode.PUSH:
 			// register

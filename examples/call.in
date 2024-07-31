@@ -1,7 +1,7 @@
 #
 # About:
 #
-#  This program demonstrates subroutine.
+#  Call a subroutine.
 #
 # Usage:
 #
@@ -9,8 +9,8 @@
 #
 # Or compile, then execute:
 #
-#  go run . compile ./call.in
-#  go run . execute ./call.raw
+#  go run . compile ./examples/call.in
+#  go run . execute ./examples/call.raw
 #
 
     store #1, 15
@@ -33,6 +33,6 @@
 
 :print
     print_int #1
-    store #1, "\n\n"
+    store #1, "\n"
     print_str #1
     ret

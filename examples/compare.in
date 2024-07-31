@@ -1,0 +1,48 @@
+#
+# About:
+#
+#  Compare the number in a register with a constant.
+#
+# Usage:
+#
+#  go run . run ./examples/compare.in
+#
+# Or compile, then execute:
+#
+#  go run . compile ./examples/compare.in
+#  go run . execute ./examples/compare.raw
+#
+
+    store #1, 4
+    cmp #1, 4
+    jmp_z equal
+
+    store #1, "unequal\n"
+    print_str #1
+    exit
+
+:equal
+    store #1, "4 == 4 -> true\n"
+    print_str #1
+
+    store #1, "one"
+    cmp #1, "two"
+    jmp_nz str1
+
+    store #1, "one not equal two -> false (bug!)\n"
+    print_str #1
+    exit
+
+:str1
+    store #1, "one"
+    cmp #1, "one"
+    jmp_z str2
+
+    store #1, "one equal one -> false (bug!)\n"
+    print_str #1
+    exit
+
+:str2
+    store #1, "string comparison OK!\n"
+    print_str #1
+    exit

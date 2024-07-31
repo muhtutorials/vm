@@ -1,0 +1,51 @@
+#
+# About:
+#
+# This example uses 'peek' to read a string character by character
+# and output the length of that string.
+#
+# Unfortunately we can't output the string itself as we have no
+# "print character" option.
+#
+# Usage:
+#
+#  go run . run ./examples/peek_str_len.in
+#
+# Or compile, then execute:
+#
+#  go run . compile ./examples/peek_str_len.in
+#  go run . execute ./examples/peek_str_len.raw
+#
+
+    #
+    # #0 -> read each byte here
+    #
+    # #1 -> length of string
+    #
+    # #2 -> address of string
+    #
+
+    store #1, 0x00
+    store #2, string
+
+:loop
+    # bytecode value at index contained in #2 saved to #0
+    peek #0, #2
+    inc #1
+    inc #2
+    cmp #0, 0x00
+    jmp_nz loop
+
+    # length will be one too many, so decrease by one
+    dec #1
+
+    store #2, "the length of the string is "
+    print_str #2
+    print_int #1
+    store #2, " bytes\n"
+    print_str #2
+    exit
+
+:string
+    data "banana"
+    data 0x00

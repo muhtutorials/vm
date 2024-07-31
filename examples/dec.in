@@ -1,0 +1,41 @@
+#
+# About:
+#
+#  Decrement an integer.
+#
+# Usage:
+#
+#  go run . run ./examples/dec.in
+#
+# Or compile, then execute:
+#
+#  go run . compile ./examples/dec.in
+#  go run . execute ./examples/dec.raw
+#
+
+    store #1, 3
+    store #0, "stored in register #1 -> 3\n"
+    print_str #0
+
+    dec #1
+    store #0, "decremented register #1 -> 2\n"
+    print_str #0
+    jmp_z empty
+
+    dec #1
+    store #0, "decremented register #1 -> 1\n"
+    print_str #0
+    jmp_z empty
+
+    dec #1
+    store #0, "decremented register #1 -> 0\n"
+    print_str #0
+    jmp_z empty
+
+    dec #1
+    store #0, "decremented register #1 -> -1 (not reached)\n"
+    print_str #0
+    jmp_z empty
+
+:empty
+    exit

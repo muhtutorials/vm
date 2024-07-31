@@ -1,0 +1,46 @@
+#
+# About:
+#
+#  Copy a part of memory, then jump to it.
+#
+# Usage:
+#
+#  go run . run ./examples/mem_cpy.in
+#
+# Or compile, then execute:
+#
+#  go run . compile ./examples/mem_cpy.in
+#  go run . execute ./examples/mem_cpy.raw
+#
+
+    jmp run
+
+:code
+    #
+    # this is the code that gets copied and executed
+    #
+    store #1, "mem_cpy works!\n"
+    print_str #1
+    exit
+:code_end
+
+:run
+    #
+    # copy the memory between 'code' and 'code_end' to 0x5000
+    #
+    # calculate the length
+    store #2, code
+    store #3, code_end
+    sub #3, #3, #2
+
+    store #1, "code length is "
+    print_str #1
+    print_int #3
+    store #1, "\n"
+    print_str #1
+
+    store #1, 0x5000
+    mem_cpy #1, #2, #3
+
+    # jump to the copied code
+    jmp 0x5000

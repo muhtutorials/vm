@@ -1,0 +1,35 @@
+#
+# About:
+#
+#  Test comparison operation.
+#
+# Usage:
+#
+#  go run . run ./examples/equal.in
+#
+# Or compile, then execute:
+#
+#  go run . compile ./examples/equal.in
+#  go run . execute ./examples/equal.raw
+#
+
+    store #1, 5
+    store #2, 7
+    cmp #1, #2
+    jmp_z five_eq_seven
+
+    store #2, 5
+    cmp #1, #2
+    jmp_z five_eq_five
+
+    exit
+
+:five_eq_five
+    store #0, "5 == 5 -> true (OK!)\n"
+    print_str #0
+    exit
+
+:five_eq_seven
+    store #0, "5 == 7 -> true (bug!)\n"
+    print_str #0
+    exit

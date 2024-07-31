@@ -1,0 +1,38 @@
+#
+# About:
+#
+# Use a conditional jump to loop ten times, the conditional will be triggered
+# if a "SUB" operation results in <= 0.
+#
+# Usage:
+#
+#  go run . run ./examples/loop.in
+#
+# Or compile, then execute:
+#
+#  go run . compile ./examples/loop.in
+#  go run . execute ./examples/loop.raw
+#
+
+    store #1, "Counting from ten to zero:\n"
+    print_str #1
+
+    store #1, 11
+    store #2, 1
+
+:repeat
+    # this means "reg1 = reg1 - reg2"
+    sub #1, #1, #2
+    print_int #1
+
+    # add new line to the output
+    store #5, "\n"
+    print_str #5
+
+    # the jump only occurs if the zero flag is set
+    jmp_nz repeat
+
+    store #1, "Done!"
+    print_str #1
+
+    exit

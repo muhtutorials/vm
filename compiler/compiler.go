@@ -173,8 +173,6 @@ func (c *Compiler) Compile() {
 			c.concatOp()
 		case token.DATA:
 			c.dataOp()
-		case token.DB:
-			c.dataOp()
 		case token.EXIT:
 			c.exitOp()
 		case token.MEM_CPY:
@@ -188,7 +186,7 @@ func (c *Compiler) Compile() {
 		case token.TRAP:
 			c.trapOp()
 		default:
-			fmt.Println("unhandled token:", c.token)
+			fmt.Printf("unhandled token: type -> %s, literal -> %v\n", c.token.Type, c.token.Literal)
 		}
 		c.nextToken()
 	}
@@ -670,7 +668,7 @@ func (c *Compiler) concatOp() {
 	c.bytecode = append(c.bytecode, reg2)
 }
 
-// dataOp embeds literal/binary data into the output
+// dataOp embeds literal binary data into the output
 func (c *Compiler) dataOp() {
 	c.nextToken()
 
@@ -808,7 +806,7 @@ func (c *Compiler) isNextToken(t token.Type) bool {
 }
 
 func (c *Compiler) nextError(t token.Type) {
-	fmt.Printf("expected next token to be %s, got %s instead", t, c.peekToken.Type)
+	fmt.Printf("expected next token to be %s, got %s instead\n", t, c.peekToken.Type)
 	os.Exit(1)
 }
 

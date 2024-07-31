@@ -1,0 +1,54 @@
+#
+# About:
+#
+# The use of bitwise AND and XOR operations.
+#
+# Usage:
+#
+#  go run . run ./examples/math.in
+#
+# Or compile, then execute:
+#
+#  go run . compile ./examples/math.in
+#  go run . execute ./examples/math.raw
+#
+
+    store #1, "255 & 16 is "
+    print_str #1
+
+    store #1, 255
+    store #2, 16
+    and #0, #1, #2
+    print_int #0
+    store #1, "\n"
+    print_str #1
+
+    cmp #0, 16
+    jmp_z and_true
+
+    store #1, "Result is wrong!\n"
+    print_str #1
+
+    exit
+
+:and_true
+    store #1, "32 & 23 is "
+    print_str #1
+
+    # 32 XOR 23 => 55
+    store #1, 32
+    store #2, 23
+    xor #0, #1, #2
+    print_int #0
+    store #1, "\n"
+    print_str #1
+
+    cmp #0, 55
+    jmp_z xor_true
+
+    store #1, "Result is wrong!\n"
+    print_str #1
+
+    exit
+
+:xor_true
