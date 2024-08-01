@@ -1,0 +1,37 @@
+#
+# About:
+#
+#  Test stack operations.
+#
+# Usage:
+#
+#  go run . run ./examples/stack.in
+#
+# Or compile, then execute:
+#
+#  go run . compile ./examples/stack.in
+#  go run . execute ./examples/stack.raw
+#
+
+    # store an integer, then push it to the stack
+    store #1, 9
+    push #1
+
+    # store a different integer
+    store #1, 255
+
+    # pop from the stack so register #1 has the previous value
+    pop #1
+
+    cmp #1, 9
+    jmp_z ok
+
+    store #1, "Stack operation was a failure.\n"
+    print_str #1
+    exit
+
+:ok
+    store #1, "Stack operation was successful.\n"
+    print_str #1
+    exit
+

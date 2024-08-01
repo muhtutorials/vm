@@ -1,11 +1,11 @@
 #
 # About:
 #
-# This example uses 'peek' to read a string character by character
-# and output the length of that string.
+#  This example uses 'peek' to read a string character by character
+#  and output the length of that string.
 #
-# Unfortunately we can't output the string itself as we have no
-# "print character" option.
+#  Unfortunately we can't output the string itself as we have no
+#  "print character" option.
 #
 # Usage:
 #

@@ -766,7 +766,6 @@ func (c *Compiler) systemOp() {
 	c.bytecode = append(c.bytecode, reg)
 }
 
-// todo: what exactly does it do?
 // trapOp inserts an interrupt call/trap
 func (c *Compiler) trapOp() {
 	// advance to the target

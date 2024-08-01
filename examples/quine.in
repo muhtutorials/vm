@@ -1,0 +1,51 @@
+#
+# About:
+#
+#  Print the bytecode of this program.
+#
+# Usage:
+#
+#  go run . run ./examples/quine.in
+#
+# Or compile, then execute:
+#
+#  go run . compile ./examples/quine.in
+#  go run . execute ./examples/quine.raw
+#
+
+    # bytecode length
+    store #1, end
+
+    # Store the current number of iteration.
+    # Starts with one which is the first iteration.
+    store #2, 1
+
+    # current index in the bytecode stored in RAM
+    store #3, 0
+
+:repeat
+    # bytecode value at index contained in #3 saved to #0
+    peek #0, #3
+    print_int #0
+
+    # increase the index in the bytecode
+    inc #3
+
+    # show some spacing
+    store #0, " "
+    print_str #0
+
+    # subtract length from current index
+    sub #1, #1, #2
+    jmp_nz repeat
+
+    # terminate with new line
+    store #1, "\n"
+    print_str #1
+    exit
+
+    # add some data
+    data 0x01, 0x02, 0x03
+    data 255, 255, 255
+
+:end

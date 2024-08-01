@@ -1,0 +1,41 @@
+#
+# About:
+#
+#  Generate ten random integers.
+#
+# Usage:
+#
+#  go run . run ./examples/random.in
+#
+# Or compile, then execute:
+#
+#  go run . compile ./examples/random.in
+#  go run . execute ./examples/random.raw
+#
+
+    store #1, "Generating ten random integers:\n"
+    print_str #1
+
+    store #1, 10
+    store #2, 1
+
+:repeat
+    #
+    # This means "reg1 = reg1 - reg2"
+    #
+    sub #1, #1, #2
+
+    # output a random integer
+    rand #0
+    print_int #0
+
+    # add newline to the output
+    store #0, "\n"
+    print_str #0
+
+    jmp_nz repeat
+
+    store #0, "Done!\n"
+    print_str #0
+
+    exit

@@ -87,7 +87,7 @@ func (c *CPU) ReadFile(path string) error {
 
 	if len(data) >= maxMemSize {
 		return fmt.Errorf(
-			"program is too large for memory: RAM size => %d bytes, program size => %d bytes\n",
+			"program is too large for memory: RAM size => %d bytes, program size => %d bytes",
 			maxMemSize, len(data))
 	}
 
@@ -175,7 +175,7 @@ func (c *CPU) Run() error {
 		// This is a little slow and inefficient, but allows the execution to be time limited.
 		select {
 		case <-c.ctx.Done():
-			return fmt.Errorf("timeout during execution\n")
+			return fmt.Errorf("timeout during execution")
 		default:
 			// nop
 		}
@@ -916,6 +916,9 @@ func (c *CPU) Run() error {
 			}
 
 			c.mem[addr] = byte(val)
+
+			// next instruction
+			c.ip++
 
 		case opcode.MEM_CPY:
 			c.ip++

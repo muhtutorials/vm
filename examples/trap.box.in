@@ -1,0 +1,91 @@
+#
+# About:
+#
+#  Prompt for a string and then output it, surrounded by a series of
+#  stars. This demonstrates trap 0x01 (read from stdin) and trap
+#  0x02 (remove newline).
+#
+# Usage:
+#
+#  go run . run ./examples/trap.in
+#
+# Or compile, then execute:
+#
+#  go run . compile ./examples/trap.in
+#  go run . execute ./examples/trap.raw
+#
+# Example:
+#
+#  If the user enters "orange" they will see the following output:
+#
+#   ********
+#   * Name *
+#   ********
+
+    store #1, "Please enter your name: "
+    print_str #1
+
+    # read a string from the console, then set the result in register #0
+    trap 0x01
+
+    # remove newline from the string in register #0
+    trap 0x02
+
+    # call a subroutine to output the boxed result
+    call box
+    exit
+
+#
+# This function prints out the string in register #0 in a box. For example if the input
+# string in register #0 is "orange" the output will be:
+#
+#   ********
+#   * Name *
+#   ********
+#
+
+:box
+    # copy string from #0 to #2
+    store #2, #0
+    # find the length of the string in register #0 and store it in the same register
+    print_int #0
+    trap 0x00
+
+    # add two stars to each side to box the string
+    inc #0
+    inc #0
+    inc #0
+    inc #0
+
+:header
+    store #1, "*"
+    print_str #1
+    dec #0
+    jmp_nz header
+
+    store #1, "\n*"
+    print_str #1
+    print_str #2
+    store #1, "*\n"
+    print_str #1
+
+    # repeat the process to print stars under the string
+    store #0, #2
+    # find the length of the string in register #0 and store it in the same register
+    trap 0x00
+
+    # add two stars to each side to box the string
+    inc #0
+    inc #0
+    inc #0
+    inc #0
+
+:footer
+    store #1, "*"
+    print_str #1
+    dec #0
+    jmp_nz footer
+
+    store #1, "\n"
+    print_str #1
+    ret

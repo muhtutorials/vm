@@ -1,8 +1,8 @@
 #
 # About:
 #
-# Use a conditional jump to loop ten times, the conditional will be triggered
-# if a "SUB" operation results in <= 0.
+#  Use a conditional jump to loop ten times, the conditional will be triggered
+#  if a "SUB" operation results in <= 0.
 #
 # Usage:
 #

@@ -1,0 +1,17 @@
+#
+# About:
+#
+#  Execute "/bin/ls".
+#
+# Usage:
+#
+#  go run . run ./examples/system.in
+#
+# Or compile, then execute:
+#
+#  go run . compile ./examples/system.in
+#  go run . execute ./examples/system.raw
+#
+
+    store #1, "/bin/ls"
+    system #1
