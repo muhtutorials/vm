@@ -33,7 +33,6 @@ type Register struct {
 
 func NewRegister() *Register {
 	r := &Register{}
-	// todo: Why are only integers allowed?
 	r.SetInt(0)
 	return r
 }

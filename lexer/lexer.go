@@ -105,7 +105,6 @@ func (l *Lexer) readStr() string {
 		}
 
 		// handle \n, \r, \t, \", etc.
-		// todo: why is it double backslash?
 		if l.char == '\\' {
 			l.readChar()
 

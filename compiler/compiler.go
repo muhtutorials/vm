@@ -312,7 +312,6 @@ func (c *Compiler) retOp() {
 	c.bytecode = append(c.bytecode, byte(opcode.RET))
 }
 
-// todo: what are jumps?
 // jumpOp inserts a direct jump
 func (c *Compiler) jumpOp(op int) {
 	// add the jump

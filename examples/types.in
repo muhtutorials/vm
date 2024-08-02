@@ -1,0 +1,76 @@
+#
+# About:
+#
+#  Test type handling.
+#
+# Usage:
+#
+#  go run . run ./examples/types.in
+#
+# Or compile, then execute:
+#
+#  go run . compile ./examples/types.in
+#  go run . execute ./examples/types.raw
+#
+
+    store #1, 8
+    is_int #1
+    jmp_z ok1
+
+    store #1, "Integer test fail!\n"
+    print_str #1
+    exit
+
+:ok1
+    store #1, "Integer test success!\n"
+    print_str #1
+
+    store #1, "banana"
+    is_str #1
+    jmp_z ok2
+
+    store #1, "String test fail!\n"
+    print_str #1
+    exit
+
+:ok2
+    store #1, "String test success!\n"
+    print_str #1
+
+
+    # convert string to integer
+    store #1, "32"
+    str_to_int #1
+    is_int #1
+    jmp_z ok3
+
+    store #1, "Failed to convert string to integer!\n"
+    print_str #1
+    exit
+
+:ok3
+    store #1, "Converted string to integer!\n"
+    print_str #1
+
+    # convert integer to string
+    store #1, 32
+    int_to_str #1
+    is_str #1
+    jmp_z ok4
+
+    store #1, "Failed to convert integer to string!\n"
+    print_str #1
+    exit
+
+:ok4
+    store #1, "Converted integer to string!\n"
+    print_str #1
+
+    is_int #1
+    jmp_nz fail
+    exit
+
+:fail
+    store #1, "Failed successfully!\n"
+    print_str #1
+    exit

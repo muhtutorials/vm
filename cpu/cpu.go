@@ -108,9 +108,6 @@ func (c *CPU) LoadBytes(data []byte) {
 
 	// copy contents of file to our memory
 	copy(c.mem[:], data)
-	//for i := 0; i < len(data); i++ {
-	//	fmt.Printf("%x\n", c.mem[i])
-	//}
 }
 
 // readInt reads a two byte number from the current IP.
@@ -167,7 +164,6 @@ func (c *CPU) Run() error {
 		}
 
 		op := opcode.NewOpcode(c.mem[c.ip])
-		//fmt.Printf("%s: %x\n", op.String(), op.Value())
 
 		debugPrintf("%04x %02x [%s]\n", c.ip, op.Value(), op.String())
 
@@ -857,6 +853,9 @@ func (c *CPU) Run() error {
 			} else {
 				return fmt.Errorf("invalid register type")
 			}
+
+			// next instruction
+			c.ip++
 
 		case opcode.PEEK:
 			c.ip++

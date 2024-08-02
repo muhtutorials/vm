@@ -1,0 +1,24 @@
+#
+# About:
+#
+#  Read a string from STDIN via a trap to the CPU.
+#
+# Usage:
+#
+#  go run . run ./examples/trap.stdin.in
+#
+# Or compile, then execute:
+#
+#  go run . compile ./examples/trap.stdin.in
+#  go run . execute ./examples/trap.stdin.raw
+#
+
+    store #1, "Enter a string: \n"
+    print_str #1
+
+    # read a string from the console, then set the result in register #0
+    trap 0x01
+
+    store #1, "You entered: \n"
+    print_str #1
+    print_str #0
